@@ -20,13 +20,16 @@ import net.md_5.bungee.api.config.ServerInfo;
 public class HostnameEvents implements Listener{
 	// Provider for hostname lookups
 	private IServerProvider m_lookupProvider = null;
+	// Message provider
+	private TextProvider m_messages = null;
 	
 	/***
 	 * New event handler
-	 * @param provider Input FQDN to servername provider
+	 * @param provider Input hostname to servername provider
 	 */
-	public HostnameEvents(IServerProvider provider) {
+	public HostnameEvents(IServerProvider provider, TextProvider messages) {
 		m_lookupProvider = provider;
+		m_messages = messages;
 	}
 	
 	@EventHandler
@@ -44,7 +47,7 @@ public class HostnameEvents implements Listener{
 			e.getPlayer().connect(serverInfo);
 		}else {
 			// Disconnect player
-			e.getPlayer().disconnect(new TextComponent("§cInvalid Hostname or Server!\n§rCould not connect you to a server! Please conntact the server admin if you think this is an issue."));
+			e.getPlayer().disconnect(new TextComponent(m_messages.GetMessage("joinFailMessage", "§cHostname not supported")));
 		}
 	}
 	
@@ -79,8 +82,8 @@ public class HostnameEvents implements Listener{
 			// Dummy response
 			ServerPing p = new ServerPing();
 			p.setPlayers(new Players(0, 0, null));
-			p.setVersion(new ServerPing.Protocol("§cInvalid Hostname or Server!", 0));
-			p.setDescriptionComponent(new TextComponent("§cInvalid Hostname or Server!"));
+			p.setVersion(new ServerPing.Protocol(m_messages.GetMessage("invalidProtocolName", "§cNo Connection"), 0));
+			p.setDescriptionComponent(new TextComponent(m_messages.GetMessage("invalidMotd", "§cHostname not supported")));
 			e.setResponse(p);
 		}
 	}
