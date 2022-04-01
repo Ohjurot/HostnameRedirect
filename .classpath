@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/Ludwig/Documents/BungeeCord.jar"/>
+	<classpathentry kind="lib" path="G:/Dev/java/BungeeCord.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

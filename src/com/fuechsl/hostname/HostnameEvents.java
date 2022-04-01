@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ServerPing.Players;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -43,8 +44,18 @@ public class HostnameEvents implements Listener{
 			// Get a server info object
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(targetServer);
 			
-			// Connect player to the server
-			e.getPlayer().connect(serverInfo);
+			// Try to reach server
+			serverInfo.ping(new Callback<ServerPing>() { 
+	            @Override
+	            public void done(ServerPing result, Throwable error) {
+	            	if(result != null)
+	            		// Connect player to the server
+	        			e.getPlayer().connect(serverInfo, ServerConnectEvent.Reason.LOBBY_FALLBACK);
+	            	else
+	            		// Kick player
+	            		e.getPlayer().disconnect(new TextComponent(m_messages.GetMessage("joinFailMessage", "§cHostname not supported")));
+	            }
+			});			
 		}else {
 			// Disconnect player
 			e.getPlayer().disconnect(new TextComponent(m_messages.GetMessage("joinFailMessage", "§cHostname not supported")));
@@ -58,16 +69,25 @@ public class HostnameEvents implements Listener{
 		
 		// Find Server
 		String targetServer = m_lookupProvider.ServerLookup(hostName);
+
 		if(targetServer != null && ProxyServer.getInstance().getServers().containsKey(targetServer)) {
 			// Get a server info object
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(targetServer);
-			
 			// Ping the info server and redirect to this response
 			CountDownLatch l = new CountDownLatch(1);
 			serverInfo.ping(new Callback<ServerPing>() { 
 	            @Override
 	            public void done(ServerPing result, Throwable error) {
-	            	e.setResponse(result);
+	            	if(result != null) {
+	            		e.setResponse(result);	
+	            	}else {
+	            		// Dummy response
+	        			ServerPing p = new ServerPing();
+	        			p.setPlayers(new Players(0, 0, null));
+	        			p.setVersion(new ServerPing.Protocol(m_messages.GetMessage("invalidProtocolName", "§cNo Connection"), 0));
+	        			p.setDescriptionComponent(new TextComponent(m_messages.GetMessage("invalidMotd", "§cHostname not supported")));
+	        			e.setResponse(p);
+	            	}
 	            	l.countDown();
 	            }
 			});

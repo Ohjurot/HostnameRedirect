@@ -34,11 +34,14 @@ public class HostnameConfig implements IServerProvider {
 		// Load bungee config
 		Configuration configuration = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 		
+		
 		// Iterate over keys / hostnames
 		for(String hostName : configuration.getKeys()) {
 			// Get servername
 			String serverName = configuration.getString(hostName);
 			if(serverName != null) {
+				// Adjust hostname
+				hostName = hostName.replace('@', '.');
 				// Store in map
 				m_config.put(hostName.toLowerCase(), serverName);
 			}
