@@ -36,7 +36,7 @@ public class HostnameEvents implements Listener{
 		
 		// Find server
 		String targetServer = m_lookupProvider.ServerLookup(hostName);
-		if(targetServer != null){
+		if(targetServer != null && ProxyServer.getInstance().getServers().containsKey(targetServer)){
 			// Get a server info object
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(targetServer);
 			
@@ -44,7 +44,7 @@ public class HostnameEvents implements Listener{
 			e.getPlayer().connect(serverInfo);
 		}else {
 			// Disconnect player
-			e.getPlayer().disconnect(new TextComponent("§cInvalid Hostname!\n§rCould not connect you to a server! Please conntact the server admin if you think this is an issue."));
+			e.getPlayer().disconnect(new TextComponent("§cInvalid Hostname or Server!\n§rCould not connect you to a server! Please conntact the server admin if you think this is an issue."));
 		}
 	}
 	
@@ -55,7 +55,7 @@ public class HostnameEvents implements Listener{
 		
 		// Find Server
 		String targetServer = m_lookupProvider.ServerLookup(hostName);
-		if(targetServer != null) {
+		if(targetServer != null && ProxyServer.getInstance().getServers().containsKey(targetServer)) {
 			// Get a server info object
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(targetServer);
 			
@@ -79,8 +79,8 @@ public class HostnameEvents implements Listener{
 			// Dummy response
 			ServerPing p = new ServerPing();
 			p.setPlayers(new Players(0, 0, null));
-			p.setVersion(new ServerPing.Protocol("§cInvalid Hostname!", 0));
-			p.setDescriptionComponent(new TextComponent("§cInvalid Hostname!"));
+			p.setVersion(new ServerPing.Protocol("§cInvalid Hostname or Server!", 0));
+			p.setDescriptionComponent(new TextComponent("§cInvalid Hostname or Server!"));
 			e.setResponse(p);
 		}
 	}

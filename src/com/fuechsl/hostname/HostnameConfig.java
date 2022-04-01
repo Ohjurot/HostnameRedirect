@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -40,11 +39,8 @@ public class HostnameConfig implements IServerProvider {
 			// Get servername
 			String serverName = configuration.getString(hostName);
 			if(serverName != null) {
-				// Check if servername is valid
-				if(ProxyServer.getInstance().getServers().containsKey(serverName)) {
-					// Store in map
-					m_config.put(hostName.toLowerCase(), serverName);
-				}
+				// Store in map
+				m_config.put(hostName.toLowerCase(), serverName);
 			}
 		}
 	}
