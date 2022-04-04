@@ -1,4 +1,4 @@
-name: Hostename Redirect
+name: HostnameRedirect
 main: com.fuechsl.hostname.HostnamePlugin
 version: 1.0
 author: Ludwig Fuechsl
