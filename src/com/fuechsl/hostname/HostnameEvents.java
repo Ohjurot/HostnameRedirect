@@ -1,5 +1,6 @@
 package com.fuechsl.hostname;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 
 import net.md_5.bungee.api.Callback;
@@ -13,6 +14,7 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.PendingConnection;
 
 /***
  * Event listener class
@@ -36,10 +38,14 @@ public class HostnameEvents implements Listener{
 	@EventHandler
 	public void onPostLogin(PostLoginEvent e) {
 		// Get the connections hostname
-		String hostName = e.getPlayer().getPendingConnection().getVirtualHost().getHostString();
+		String hostName = GetHostNameFromPendingConnection(e.getPlayer().getPendingConnection());
 		
 		// Find server
-		String targetServer = m_lookupProvider.ServerLookup(hostName);
+		String targetServer = null;
+		if(hostName != null) {
+			targetServer = m_lookupProvider.ServerLookup(hostName);
+		}
+		
 		if(targetServer != null && ProxyServer.getInstance().getServers().containsKey(targetServer)){
 			// Get a server info object
 			ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(targetServer);
@@ -65,10 +71,13 @@ public class HostnameEvents implements Listener{
 	@EventHandler
 	public void onProxyPing(ProxyPingEvent e) {
 		// Get the pings hostname
-		String hostName = e.getConnection().getVirtualHost().getHostString();
+		String hostName = GetHostNameFromPendingConnection(e.getConnection());
 		
 		// Find Server
-		String targetServer = m_lookupProvider.ServerLookup(hostName);
+		String targetServer = null;
+		if(hostName != null) {
+			targetServer = m_lookupProvider.ServerLookup(hostName);
+		}
 
 		if(targetServer != null && ProxyServer.getInstance().getServers().containsKey(targetServer)) {
 			// Get a server info object
@@ -106,5 +115,22 @@ public class HostnameEvents implements Listener{
 			p.setDescriptionComponent(new TextComponent(m_messages.GetMessage("invalidMotd", "§cHostname not supported")));
 			e.setResponse(p);
 		}
+	}
+	
+	/**
+	 * Safely retrieve host string
+	 * @param c Input connection or null
+	 * @return Host string on success or null
+	 */
+	private static String GetHostNameFromPendingConnection(PendingConnection c) {
+		String host = null;
+		if(c != null) {
+			InetSocketAddress saddr = c.getVirtualHost();
+			if(saddr != null){
+				host = saddr.getHostString();
+			}
+		}
+		
+		return host;
 	}
 }
