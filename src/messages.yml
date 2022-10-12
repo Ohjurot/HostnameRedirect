@@ -1,3 +1,5 @@
 joinFailMessage: "§cInvalid Hostname or Server:\n\n§rCould not connect you to a server! Please contact the server admin if you think this is an issue."
 invalidProtocolName: §cNo Connection
 invalidMotd: §cInvalid Hostname or Server!
+offlineMotd: §cServer Offline
+offlineProtocolName: §cServer Offline
